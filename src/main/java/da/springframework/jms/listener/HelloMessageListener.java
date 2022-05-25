@@ -37,13 +37,18 @@ public class HelloMessageListener {
     @JmsListener(destination = JmsConfig.MY_SEND_RECEIVE_QUEUE)
     public void listenForHello(@Payload HelloWorldMessage helloWorldMessage,
                                @Headers MessageHeaders headers,
-                               Message message) throws JMSException {
+                               Message jmsMessage,
+                               org.springframework.messaging.Message springMessage) throws JMSException {
 
         HelloWorldMessage payloadMsg = HelloWorldMessage.builder()
                 .id(UUID.randomUUID())
                 .message("World!")
                 .build();
 
-        jmsTemplate.convertAndSend(message.getJMSReplyTo(), payloadMsg);
+        //JMS Message implementation
+        jmsTemplate.convertAndSend(jmsMessage.getJMSReplyTo(), payloadMsg);
+
+        //Spring implementation
+//        jmsTemplate.convertAndSend((Destination) springMessage.getHeaders().get("jms_replyTo"), "got it!");
     }
 }
